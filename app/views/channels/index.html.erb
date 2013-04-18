@@ -1,0 +1,75 @@
+<%- model_class = Channel.new.class -%>
+<% if current_user.nil? %>
+  <%= render 'home' %>
+<% else %>
+  <div id = "channel_list">
+    <p><%= t(:choose_channel)%></p>
+    <%= form_tag '/update_chat', remote: true do %>
+    <%= select_tag "channel_id", options_from_collection_for_select(@channels, "id", "name"),
+     {:include_blank => true, :class => "chzn-select" } %>
+    <%= submit_tag t(:choose)%>
+    <% end %>
+  </div>
+  <span id = "msg-channel"></span>
+  <span id= "msg-update-chat"></span>
+  <br>
+  <div id = "chat-container">
+    <% if current_channel.nil? or current_channel.blank? %>
+      <p>Seleccione canal para empezar</p>
+    <% else %>    
+      <h3><%= current_channel_route %></h3>
+      <ul id="chat-<%= current_channel.id %>">
+        <%= render @messages %>
+      </ul>
+      <%= form_for Message.new, remote: true do |f| %>
+        <%= f.text_field :content %>
+        <%= select_tag "message[to]", options_from_collection_for_select(@users, "id", "username"),
+         {:include_blank => true,:class => "chzn-select"} %>
+        <%= f.submit t(:send), :id => "create-msg" %>
+      <% end %>
+      <span id = "msg-chat"></span>
+    <% end %>
+  </div>
+  <%= subscribe_to '/messages' %>
+  <% if current_user %>
+    <%= subscribe_to current_user_channel %>
+  <% end %>
+  <% if current_channel %>
+    <%= subscribe_to current_channel_route %>
+  <% end %>
+
+  <% if can? :manage , current_user %>
+    <h1><%=t '.title', :default => t(:channels) %></h1>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th><%= t(:name) %></th>
+          <th><%= t(:created_at) %></th>
+          <th><%=t '.actions', :default => t("helpers.actions") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @channels.each do |channel| %>
+          <tr>
+            <td><%= link_to channel.name , channel_path(channel) %></td>
+            <td><%=l channel.created_at %></td>
+            <td>
+              <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                          edit_channel_path(channel), :class => 'btn btn-mini' %>
+              <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                          channel_path(channel),
+                          :method => :delete,
+                          :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+                          :class => 'btn btn-mini btn-danger' %>
+            </td>
+
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= link_to t('.new', :default => t("helpers.links.new")),
+                new_channel_path,
+                :class => 'btn btn-primary' %>
+  <% end %>
+<% end %>
