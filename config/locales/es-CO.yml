@@ -2,6 +2,7 @@
 # Corrected by Eloy Serra Labán: http://goo.gl/i9Kts, /nQ928, /XfKaX
 
 es-CO:
+
   created_at: Creado el 
   edit_users: Editar usuarios
   roles: roles
@@ -14,6 +15,7 @@ es-CO:
   choose: "seleccionar"
   new_channel_selected: "nuevo canal seleccionado"
   new_channel_created: "nuevo canal creado"
+  channel_updated: "Canal actualizado"
   choose_channel: "Seleccionar canal:"
   name_channel: "Nombre de canal"
   to_create_channel: "Para crear un nuevo canal"

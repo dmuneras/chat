@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   
   #load_and_authorize_resource
-  before_filter :current_user?
+  #before_filter :current_user?
   
   def index
     @users = User.all
@@ -12,6 +12,10 @@ class UsersController < ApplicationController
        format.html  # new.html.erb
        format.json  { render :json => @user }
      end
+  end
+
+  def show
+    @user = User.find(params[:id])
   end
 
   def create
@@ -41,9 +45,11 @@ class UsersController < ApplicationController
      respond_to do |format|
        if @user.update_attributes(params[:user])
          format.html { 
-           @user.password = Digest::MD5.hexdigest @user.password
-           @user.save
-           redirect_to users_path, notice: 'Channel was successfully updated.' 
+             unless @user.password.nil? or @user.password.blank?
+               @user.password = Digest::MD5.hexdigest @user.password
+               @user.save
+            end
+           redirect_to users_path, notice: t(:channel_updated) 
          
          }
          format.json { head :ok }
